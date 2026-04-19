@@ -1,6 +1,8 @@
 package wooho.common.util.validate;
 
 import wooho.common.util.validate.exception.ValidateException;
+import wooho.common.util.validate.rules.FaxRule;
+import wooho.common.util.validate.rules.PhoneRule;
 import wooho.common.util.i18n.MessageHolder;
 
 import java.util.Locale;
@@ -24,6 +26,12 @@ public class ValidatorTest {
 
         // 4. 测试自定义规则
         testCustomRule();
+
+        // 5. 测试电话规则
+        testPhoneRule();
+
+        // 6. 测试传真规则
+        testFaxRule();
 
         System.out.println("\n========== 测试完成 ==========");
     }
@@ -142,6 +150,81 @@ public class ValidatorTest {
             System.out.println("  ✓ 年龄 25 校验通过");
         } catch (ValidateException e) {
             System.out.println("  ✗ 校验失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 测试电话号码规则
+     */
+    private static void testPhoneRule() {
+        System.out.println("【5. 电话号码校验】");
+        MessageHolder.setLocale(Locale.CHINA);
+
+        // 测试静态方法
+        System.out.println("  静态方法校验:");
+        System.out.println("    手机号 13812345678: " + PhoneRule.isValidMobile("13812345678"));
+        System.out.println("    手机号 12345678901: " + PhoneRule.isValidMobile("12345678901"));
+        System.out.println("    座机 010-12345678: " + PhoneRule.isValidLandline("010-12345678"));
+        System.out.println("    座机 0755-1234567: " + PhoneRule.isValidLandline("0755-1234567"));
+        System.out.println("    国际号 +86 13812345678: " + PhoneRule.isValidInternational("+86 13812345678"));
+
+        // 测试链式调用
+        System.out.println("\n  链式调用校验:");
+        try {
+            Validator.of("13812345678", "手机号").notBlank().phone().validate();
+            System.out.println("  ✓ 手机号 '13812345678' 校验通过");
+        } catch (ValidateException e) {
+            System.out.println("  ✗ 校验失败: " + e.getMessage());
+        }
+
+        try {
+            Validator.of("010-12345678", "座机").notBlank().phone().validate();
+            System.out.println("  ✓ 座机 '010-12345678' 校验通过");
+        } catch (ValidateException e) {
+            System.out.println("  ✗ 校验失败: " + e.getMessage());
+        }
+
+        try {
+            Validator.of("+86 13812345678", "国际号").notBlank().phone().validate();
+            System.out.println("  ✓ 国际号 '+86 13812345678' 校验通过");
+        } catch (ValidateException e) {
+            System.out.println("  ✗ 校验失败: " + e.getMessage());
+        }
+
+        try {
+            Validator.of("123456", "手机号").notBlank().phone().validate();
+        } catch (ValidateException e) {
+            System.out.println("  ✗ 无效手机号 '123456' 校验失败: " + e.getMessage());
+        }
+        System.out.println();
+    }
+
+    /**
+     * 测试传真号码规则
+     */
+    private static void testFaxRule() {
+        System.out.println("【6. 传真号码校验】");
+        MessageHolder.setLocale(Locale.CHINA);
+
+        // 测试静态方法
+        System.out.println("  静态方法校验:");
+        System.out.println("    传真 010-12345678: " + FaxRule.isValidFax("010-12345678"));
+        System.out.println("    传真 0755-1234567: " + FaxRule.isValidFax("0755-1234567"));
+        System.out.println("    国际传真 +86 10 12345678: " + FaxRule.isValidInternationalFax("+86 10 12345678"));
+
+        // 测试链式调用
+        System.out.println("\n  链式调用校验:");
+        try {
+            Validator.of("0755-12345678", "传真号").notBlank().fax().validate();
+            System.out.println("  ✓ 传真号 '0755-12345678' 校验通过");
+        } catch (ValidateException e) {
+            System.out.println("  ✗ 校验失败: " + e.getMessage());
+        }
+
+        try {
+            Validator.of("12345", "传真号").notBlank().fax().validate();
+        } catch (ValidateException e) {
+            System.out.println("  ✗ 无效传真号 '12345' 校验失败: " + e.getMessage());
         }
     }
 }

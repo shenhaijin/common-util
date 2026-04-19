@@ -217,6 +217,40 @@ public class Validator<T> {
     }
 
     /**
+     * 电话号码格式校验（支持手机号、座机号、国际号码）
+     */
+    @SuppressWarnings("unchecked")
+    public Validator<T> phone() {
+        return phone(null);
+    }
+
+    /**
+     * 电话号码格式校验（自定义错误码）
+     */
+    @SuppressWarnings("unchecked")
+    public Validator<T> phone(String errorCode) {
+        rules.add(new RuleEntry<>((ValidationRule<T>) new PhoneRule(), errorCode));
+        return this;
+    }
+
+    /**
+     * 传真号码格式校验
+     */
+    @SuppressWarnings("unchecked")
+    public Validator<T> fax() {
+        return fax(null);
+    }
+
+    /**
+     * 传真号码格式校验（自定义错误码）
+     */
+    @SuppressWarnings("unchecked")
+    public Validator<T> fax(String errorCode) {
+        rules.add(new RuleEntry<>((ValidationRule<T>) new FaxRule(), errorCode));
+        return this;
+    }
+
+    /**
      * 自定义校验规则：传入一个 Predicate lambda 进行任意校验逻辑
      */
     public Validator<T> is(ValidationRule<T> rule) {
